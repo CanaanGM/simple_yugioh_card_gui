@@ -1,0 +1,1 @@
+simple GUI app that diplays yugioh images gotten from this here epic [API](https://db.ygoprodeck.com/api/v7/cardinfo.php)
