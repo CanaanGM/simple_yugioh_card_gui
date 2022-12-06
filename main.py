@@ -13,7 +13,7 @@ layout = [
     [sg.Image(size=((300,300)), key='-IMAGE-')],
     [sg.Text(key='-RACE-'),sg.Text(key="-ARCH-")],
     [sg.Text(key='-DESCRIPTION-', auto_size_text=True)],
-    [sg.Text(text="ATK" , key='-ATK-'), sg.Text(text="ATK" ,key='-DEF-')],
+    [sg.Text(text="ATK" , key='-ATK-'), sg.Text(text="DEF" ,key='-DEF-')],
     [sg.Button("get card info", key='-SUBMIT-')],
 ]
  # no need to remove the name cause this will only be use once
@@ -48,7 +48,7 @@ def handle_image_operations(data:Any):
     random_image= choice( data['card_images'])
     card_image  = requests.get(random_image['image_url'])
     image =Image.open(io.BytesIO(card_image.content)) 
-    image.thumbnail((300, 300))
+    image.thumbnail((400, 400))
     image.save(f"{data.get('name')}.png")
 
 while True:
