@@ -1,7 +1,7 @@
 from random import choice
 from typing import Any
 import PySimpleGUI as sg
-import requests, io
+import requests, io, os, shutil
 from PIL import Image 
 
 sg.theme('BluePurple')
@@ -21,7 +21,7 @@ URL = "https://db.ygoprodeck.com/api/v7/cardinfo.php?name="
 
 window = sg.Window("something", layout, size=(600,600))
 
-def update_fields(data:Any):
+def update_fields(data:Any) -> None:
     """updates the fields with the data gotten from the api
 
     Args:
@@ -34,12 +34,12 @@ def update_fields(data:Any):
     window['-RACE-'].update(value=data.get('race'))
     window['-ARCH-'].update(value=data.get('archetype'))
 
-    window['-IMAGE-'].update(f"{data.get('name')}.png")
+    window['-IMAGE-'].update(f"./images/{data.get('name')}.png")
     window['-DESCRIPTION-'].update(value=data.get('desc'))
     window['-ATK-'].update(value=data.get('atk'))
     window['-DEF-'].update(value=data.get('def'))
 
-def handle_image_operations(data:Any):
+def handle_image_operations(data:Any) -> None:
     """handles all operations related to images
 
     Args:
@@ -49,7 +49,15 @@ def handle_image_operations(data:Any):
     card_image  = requests.get(random_image['image_url'])
     image =Image.open(io.BytesIO(card_image.content)) 
     image.thumbnail((400, 400))
-    image.save(f"{data.get('name')}.png")
+    if not os.path.isdir("./images/"):
+        os.mkdir("./images/")
+    image.save(f"./images/{data.get('name')}.png")
+
+def clean_images() -> None:
+    """ cleans the images at program's end of life
+    """
+    shutil.rmtree("./images/")
+
 
 while True:
     event, values = window.read()
@@ -60,7 +68,6 @@ while True:
             if res.status_code == 200:
                 res_json = res.json()
                 handle_image_operations(res_json['data'][0])
-
                 update_fields(res_json['data'][0])
 
             else:
@@ -68,6 +75,8 @@ while True:
 
     # run away . . . save ur souuul . . run away .. run forever more~!
     if event == sg.WIN_CLOSED:
-        print("farewell~!")
+        print("cleaning images. . .")
+        clean_images()
+        print("done, farewell~!")
         break
 
